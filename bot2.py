@@ -53,7 +53,7 @@ from aiogram import Bot, Dispatcher, executor,types
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
 
 
-TOKEN='5487598241:AAFoCU8gnMLdukjLYNsoVqQNgMI_8fi_eig'
+TOKEN=''
 bot=Bot(token=TOKEN)
 dp=Dispatcher(bot)
 
