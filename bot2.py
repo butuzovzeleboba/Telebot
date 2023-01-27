@@ -25,29 +25,6 @@ for film in films:
     test_df.loc[counter, "country"] = x[1]
     counter += 1
 
-# film2 = requests.get("https://www.kinoafisha.info/rating/movies/?page=1")
-# soup2 = BeautifulSoup(film2.content, "html.parser")
-#
-# merger = pd.DataFrame()
-# #####
-# pd.set_option('display.max_columns', None)
-# pd.set_option('display.max_rows', None)
-# test_df = pd.DataFrame(columns=["name", "cla", "years", "country"])
-# films = soup2.find_all('div', class_="movieList_item")
-# for film in films:
-#     title = film.find('a', class_="movieItem_title").text.strip()
-#     cla = film.find('span', class_="movieItem_genres").text.strip()
-#     year = film.find('span', class_="movieItem_year").text.strip()
-#     # years = len(year) // 2
-#     x = year.split(",")
-#     test_df.loc[counter, "name"] = title
-#     test_df.loc[counter, "cla"] = cla
-#     test_df.loc[counter, "years"] = x[0]
-#     test_df.loc[counter, "country"] = x[1]
-#     counter += 1
-# #print(test_df)
-# #print(test_df.sample())
-
 anime3 = requests.get("https://animestars.org/aniserials/video/")
 soup3 = BeautifulSoup(anime3.content, "html.parser")
 
@@ -89,7 +66,7 @@ greet3=ReplyKeyboardMarkup().add(button_game1).add(button_game2).add(button_film
 
 @dp.message_handler(commands=['start','help'])
 async def send_welcome(msg: types.Message):
-    await msg.reply('Хай чунга чанга я Butuz!\nКамень, ножницы, бумага?\nИли может угадай число?\nА может фильмец посоветовать?', reply_markup=greet3)
+    await msg.reply('Хай чунга чанга я Butuz!\nСоветую фильмы, сериалы, мультики и аниме\nНажми что хочешь посмотреть\nи погнали', reply_markup=greet3)
 
 @dp.message_handler(content_types=['text'])
 async def get_text_messages(msg: types.Message):
