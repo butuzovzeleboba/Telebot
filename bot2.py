@@ -25,50 +25,62 @@ for film in films:
     test_df.loc[counter, "country"] = x[1]
     counter += 1
 
-film2 = requests.get("https://www.kinoafisha.info/rating/movies/?page=1")
-soup2 = BeautifulSoup(film2.content, "html.parser")
+# film2 = requests.get("https://www.kinoafisha.info/rating/movies/?page=1")
+# soup2 = BeautifulSoup(film2.content, "html.parser")
+#
+# merger = pd.DataFrame()
+# #####
+# pd.set_option('display.max_columns', None)
+# pd.set_option('display.max_rows', None)
+# test_df = pd.DataFrame(columns=["name", "cla", "years", "country"])
+# films = soup2.find_all('div', class_="movieList_item")
+# for film in films:
+#     title = film.find('a', class_="movieItem_title").text.strip()
+#     cla = film.find('span', class_="movieItem_genres").text.strip()
+#     year = film.find('span', class_="movieItem_year").text.strip()
+#     # years = len(year) // 2
+#     x = year.split(",")
+#     test_df.loc[counter, "name"] = title
+#     test_df.loc[counter, "cla"] = cla
+#     test_df.loc[counter, "years"] = x[0]
+#     test_df.loc[counter, "country"] = x[1]
+#     counter += 1
+# #print(test_df)
+# #print(test_df.sample())
+
+anime3 = requests.get("https://animestars.org/aniserials/video/")
+soup3 = BeautifulSoup(anime3.content, "html.parser")
 
 merger = pd.DataFrame()
 #####
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
-test_df = pd.DataFrame(columns=["name", "cla", "years", "country"])
-films = soup2.find_all('div', class_="movieList_item")
-for film in films:
-    title = film.find('a', class_="movieItem_title").text.strip()
-    cla = film.find('span', class_="movieItem_genres").text.strip()
-    year = film.find('span', class_="movieItem_year").text.strip()
-    # years = len(year) // 2
-    x = year.split(",")
-    test_df.loc[counter, "name"] = title
-    test_df.loc[counter, "cla"] = cla
-    test_df.loc[counter, "years"] = x[0]
-    test_df.loc[counter, "country"] = x[1]
-    counter += 1
-#print(test_df)
-#print(test_df.sample())
-
-anime3 = requests.get("https://yummyanime.tv/1top-100/")
-soup3 =BeautifulSoup(anime3.content, "html.parser")
-
-dp_anime = pd.DataFrame()
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
-test_df=pd.DataFrame(columns=["name", "cla", "years", "country"])
+anime_df = pd.DataFrame(columns=["name", "cla", "years"])
+anime = soup3.find_all('a', class_="poster grid-item d-flex fd-column has-overlay")
+counter = 0
+for film in anime:
+        title = film.find('h3', class_="poster__title ws-nowrap").text.strip()
+        year = film.find('div', class_="poster__meta flex-grow-1 ws-nowrap").text.strip()
+        x = year.split(",", 1)
+        anime_df.loc[counter, "name"] = title
+        anime_df.loc[counter, "years"] = x[0]
+        anime_df.loc[counter, "cla"] = x[1]
+        counter += 1
 
 
 from aiogram import Bot, Dispatcher, executor,types
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
 
 
-TOKEN=''
+TOKEN='5487598241:AAFoCU8gnMLdukjLYNsoVqQNgMI_8fi_eig'
 bot=Bot(token=TOKEN)
 dp=Dispatcher(bot)
 
 button_hi = KeyboardButton('привет')
 greet_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(button_hi)
 
-button_game1=KeyboardButton('мултик')
+button_game1=KeyboardButton('мультик')
 button_game2=KeyboardButton('сирик')
 button_NO=KeyboardButton('анумэ')
 button_film=KeyboardButton('давай фильм')
@@ -85,12 +97,14 @@ async def get_text_messages(msg: types.Message):
         sam_film = test_df.sample()
         sam_film = '\n'.join(sam_film.to_string(index=False).split('\n')[1:])
         await msg.answer(f'{sam_film}')
-    if msg.text.lower() == 'не, ну можно и в угадай число':
+    if msg.text.lower() == 'мультик':
         await msg.answer('думаю как сделать')
-    if msg.text.lower() == 'давай в камень, ножницы тупо зарубим':
+    if msg.text.lower() == 'сирик':
         await msg.answer('думаю как сделать')
-    if msg.text.lower() == 'да чет влом сорри':
-        await msg.answer('пока')
+    if msg.text.lower() == 'анумэ':
+        sam_anime = anime_df.sample()
+        sam_anime = '\n'.join(sam_anime.to_string(index=False).split('\n')[1:])
+        await msg.answer(f'{sam_anime}')
 
 if __name__ == '__main__':
     executor.start_polling(dp)
