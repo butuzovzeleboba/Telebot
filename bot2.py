@@ -7,7 +7,7 @@ film1 = requests.get("https://www.kinoafisha.info/rating/movies/")
 soup1 = BeautifulSoup(film1.content, "html.parser")
 
 merger = pd.DataFrame()
-#####
+#####Фильм парсер
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 test_df = pd.DataFrame(columns=["name", "cla", "years", "country"])
@@ -17,19 +17,19 @@ for film in films:
     title = film.find('a', class_="movieItem_title").text.strip()
     cla = film.find('span', class_="movieItem_genres").text.strip()
     year = film.find('span', class_="movieItem_year").text.strip()
-    # years = len(year) // 2
-    x = year.split(",")
+    x = year.split(",", 1)
     test_df.loc[counter, "name"] = title
     test_df.loc[counter, "cla"] = cla
     test_df.loc[counter, "years"] = x[0]
     test_df.loc[counter, "country"] = x[1]
     counter += 1
 
+#####Аниме парсер
+
 anime3 = requests.get("https://animestars.org/aniserials/video/")
 soup3 = BeautifulSoup(anime3.content, "html.parser")
 
 merger = pd.DataFrame()
-#####
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
@@ -45,6 +45,30 @@ for film in anime:
         anime_df.loc[counter, "cla"] = x[1]
         counter += 1
 
+#####Сериалы парсер
+
+serial1 = requests.get("https://www.film.ru/compilation/100-luchshih-serialov-xxi-veka-po-versii-bbc")
+soup3 = BeautifulSoup(serial1.content, "html.parser")
+
+merger = pd.DataFrame()
+#####
+
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+serial_df = pd.DataFrame(columns=["name", "cla", "years", "country"])
+serial = soup3.find_all('div', class_="film_list")
+counter = 0
+for film in serial:
+    title = film.find('a', class_="film_list_link").text.strip()
+    x = title.split("\n")
+    y = x[4].split(",")
+    serial_df.loc[counter, "name"] = x[0]
+    serial_df.loc[counter, "years"] = x[2]
+    serial_df.loc[counter, "cla"] = y[0]
+    serial_df.loc[counter, "country"] = y[1]
+    counter += 1
+
+#####Создание бота
 
 from aiogram import Bot, Dispatcher, executor,types
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
@@ -77,7 +101,9 @@ async def get_text_messages(msg: types.Message):
     if msg.text.lower() == 'мультик':
         await msg.answer('думаю как сделать')
     if msg.text.lower() == 'сирик':
-        await msg.answer('думаю как сделать')
+        sam_serial = serial_df.sample()
+        sam_serial = '\n'.join(sam_serial.to_string(index=False).split('\n')[1:])
+        await msg.answer(f'{sam_serial}')
     if msg.text.lower() == 'анумэ':
         sam_anime = anime_df.sample()
         sam_anime = '\n'.join(sam_anime.to_string(index=False).split('\n')[1:])
